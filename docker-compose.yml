@@ -11,4 +11,4 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - ./pg-data:/var/lib/postgresql/data
+      - ./dev-pg-volume:/var/lib/postgresql/data

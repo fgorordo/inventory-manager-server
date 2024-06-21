@@ -1,5 +1,6 @@
 # docker volumes
 /pg-data
+/dev-pg-volume
 
 # compiled output
 /dist

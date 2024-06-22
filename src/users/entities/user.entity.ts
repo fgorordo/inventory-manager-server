@@ -1,5 +1,5 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ValidRoles } from "../models";
+import { UserRoles } from "../models";
 
 @Entity()
 export class User {
@@ -12,7 +12,7 @@ export class User {
     @Column("text", {unique: true})
     email: string;
 
-    @Column("text")
+    @Column("text",{ select: false})
     password: string;
 
     @Column("text", {nullable: true})
@@ -21,16 +21,16 @@ export class User {
     @Column("bool", {default: true})
     is_active: boolean;
 
-    @Column("text", {array: true, default: [ValidRoles.USER]})
-    roles: ValidRoles[]
+    @Column("text", {default: UserRoles.CUSTOMER})
+    role: UserRoles
 
-    @CreateDateColumn({name: "created_at"})
+    @CreateDateColumn({name: "created_at", select: false})
     created_at: Date
 
-    @UpdateDateColumn({name: "updated_at"})
+    @UpdateDateColumn({name: "updated_at", select: false})
     updated_at: Date
 
-    @DeleteDateColumn({name: "deleted_at"})
+    @DeleteDateColumn({name: "deleted_at", select: false})
     deleted_at: Date
 
     private normalizeFields() {

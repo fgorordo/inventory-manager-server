@@ -28,8 +28,8 @@ export class AuthController {
     return this.authService.refreshAuthToken(id, token)
   }
 
-  @Patch("/seed")
-  createSeedUser() {
-    return this.authService.createSeedUser();
-  }
+  // @Patch("/seed")
+  // createSeedUser() {
+  //   return this.authService.createSeedUser();
+  // }
 }

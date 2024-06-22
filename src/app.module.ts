@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getEnvironment } from './helpers';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
 
     AuthModule,
+
+    UsersModule,
   ],
   controllers: [],
   providers: [],

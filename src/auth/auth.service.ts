@@ -1,12 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities';
 import { IsNull, Not, Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
-import { Tokens, ValidRoles } from './models';
+import { Tokens } from './models';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { User } from 'src/users/entities/';
 
 @Injectable()
 export class AuthService {
@@ -20,11 +20,12 @@ export class AuthService {
     ) {}
 
     async localLogin(dto: AuthDto): Promise<Tokens> {
-        const candidate = await this.userRepository.findOneBy({email: dto.email});
+        const candidate = await this.userRepository.findOne({where: {email: dto.email}, select: {password: true, id: true}});
+        console.log(candidate)
         if (!candidate) throw new ForbiddenException("Credenciales incorrectas, intenta de nuevo por favor.");
-
         const hashMatches = this.compareHashes(dto.password, candidate.password)
         if (!hashMatches) throw new ForbiddenException("Credenciales incorrectas, intenta de nuevo por favor.");
+
 
         const tokens = await this.generateAccessAndRefreshToken(candidate.id, candidate.email)
         await this.updateUserRefreshTokenHash(candidate.id, tokens.refresh_token)
@@ -37,7 +38,7 @@ export class AuthService {
     }
     
     async refreshAuthToken(id: string, token: string) {
-        const candidate = await this.userRepository.findOneBy({id});
+        const candidate = await this.userRepository.findOne({where:{id}, select: {refresh_token_hash: true, id: true}});
 
         if (!candidate || !candidate.refresh_token_hash) throw new ForbiddenException("Acceso denegado, se requieren permisos");
 
@@ -50,23 +51,23 @@ export class AuthService {
         return tokens;
     }
 
-    async createSeedUser(): Promise<Tokens> {
+    // async createSeedUser(): Promise<Tokens> {
 
-        await this.userRepository.delete({});
+    //     await this.userRepository.delete({});
 
-        const candidate = this.userRepository.create({
-            full_name: "Fern Developer",
-            email: "dev@google.com",
-            password: this.hashField("123456"),
-            roles: [ValidRoles.USER, ValidRoles.SUPER_USER, ValidRoles.ADMIN]
-        })
+    //     const candidate = this.userRepository.create({
+    //         full_name: "Fern Developer",
+    //         email: "dev@google.com",
+    //         password: this.hashField("123456"),
+    //         roles: [ValidRoles.USER, ValidRoles.SUPER_USER, ValidRoles.ADMIN]
+    //     })
 
-        const user = await this.userRepository.save(candidate);
-        const tokens = await this.generateAccessAndRefreshToken(user.id, user.email);
-        await this.updateUserRefreshTokenHash(user.id, tokens.refresh_token)
+    //     const user = await this.userRepository.save(candidate);
+    //     const tokens = await this.generateAccessAndRefreshToken(user.id, user.email);
+    //     await this.updateUserRefreshTokenHash(user.id, tokens.refresh_token)
 
-        return tokens;
-    }
+    //     return tokens;
+    // }
 
     private async generateAccessAndRefreshToken(sub: string, email: string): Promise<Tokens> {
         const [accessToken, refreshToken] = await Promise.all([

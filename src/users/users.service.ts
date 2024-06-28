@@ -16,8 +16,11 @@ export class UsersService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    //! HASH USER PASSWORD;
+    const candidate = this.userRepository.create({...createUserDto, password: "abc1234"});
+    const user = await this.userRepository.save(candidate);
+    return user;
   }
 
   async findAll() {

@@ -19,7 +19,6 @@ export class UsersController {
 
   @Get('/seed')
   generateSeedUsers() {
-    console.log("aqui")
     return this.usersService.createSeed();
   }
 
